@@ -10,6 +10,23 @@ Sonos' Neural Network inference engine.
 
 _This project used to be called tfdeploy, or Tensorflow-deploy-rust._
 
+## SGX Related
+
+Multiple modules of `tract` are working for Rust SGX, such as: 
+* `tract-data`
+* `tract-linalg`
+* `tract-core`
+* `tract-hir`
+* `tract-nnef`
+* `tract-onnx`
+* `tract-onnx-opl`
+
+Those modules are NOT ported yet: 
+* `tract-tensorflow`
+* `tract-pulse`
+* `tract-pulse-opl`
+* `tract-kaidi`
+
 ## What ?
 
 `tract` is a Neural Network inference toolkit. It can read Tensorflow 1, ONNX
