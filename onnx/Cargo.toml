@@ -26,7 +26,7 @@ tract-hir = { version = "0.17.2-pre", path = "../hir" }
 tract-nnef = { version = "0.17.2-pre", path = "../nnef" }
 tract-onnx-opl = { version = "0.17.2-pre", path = "../onnx-opl" }
 
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+[target.'cfg(all(not(target_arch = "wasm32"), not(target_env = "sgx")))'.dependencies]
 mapr = "0.8.0"
 
 [build-dependencies]
