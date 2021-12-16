@@ -16,8 +16,14 @@ impl std::error::Error for UndeterminedSymbol {}
 
 macro_rules! b( ($e:expr) => { Box::new($e) } );
 
+#[cfg(all(not(feature = "mesalock_sgx"), not(target_env = "sgx")))]
 lazy_static::lazy_static! {
     static ref SYMBOL_TABLE: std::sync::Mutex<Vec<char>> = std::sync::Mutex::new(Vec::new());
+}
+
+#[cfg(any(feature = "mesalock_sgx", target_env = "sgx"))]
+lazy_static::lazy_static! {
+    static ref SYMBOL_TABLE: std::sync::SgxMutex<Vec<char>> = std::sync::SgxMutex::new(Vec::new());
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Debug)]

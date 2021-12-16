@@ -26,7 +26,7 @@ tract-hir = { path = "../hir" }
 tract-nnef = { path = "../nnef" }
 tract-onnx-opl = { path = "../onnx-opl" }
 
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+[target.'cfg(all(not(target_arch = "wasm32"), not(target_env = "sgx")))'.dependencies]
 mapr = "0.8.0"
 
 [build-dependencies]

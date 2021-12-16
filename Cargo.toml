@@ -3,31 +3,10 @@ members = [
     "data",
     "linalg",
     "core",
-    "pulse",
-    "pulse-opl",
     "hir",
     "nnef",
-    "tensorflow",
     "onnx-opl",
     "onnx",
-    "kaldi",
-    "cli",
-    "examples/tensorflow-mobilenet-v2",
-    "examples/jupyter-keras-tract-tf1",
-    "examples/jupyter-keras-tract-tf2",
-    "examples/nnef-dump-mobilenet-v2",
-    "examples/nnef-mobilenet-v2",
-    "examples/onnx-mobilenet-v2",
-    "examples/onnx-mobilenet-v2-batch",
-    "examples/pytorch-albert-v2",
-    "examples/pytorch-resnet",
-    "harness/core-proptest-pulse",
-    "harness/lstm-proptest-onnx-vs-tf",
-    "harness/nnef-inceptionv3",
-    "harness/onnx-test-suite",
-    "harness/tf-inceptionv3",
-    "harness/tf-mobilenet-v2",
-    "harness/tf-moz-deepspeech",
 ]
 
 [profile.opt-no-lto]
@@ -50,3 +29,7 @@ opt-level = 0 # work around never ending build on wondows
 debug = false
 # strip = "debuginfo" does not work on android and ios
 incremental = false
+
+[patch.crates-io]
+tar = { git = "https://github.com/mithril-security/tar-rs-sgx.git", tag = "0.4.33x"}
+anyhow = { git = 'ssh://git@github.com/mithril-security/anyhow-xargo-sgx.git', tag = "1.0.45-sgx" }
