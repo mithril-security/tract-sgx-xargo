@@ -30,6 +30,8 @@ tract-onnx-opl = { version = "0.18.3-pre", path = "../onnx-opl" }
 
 [dev-dependencies]
 env_logger = "0.9.0"
+[target.'cfg(all(not(target_arch = "wasm32"), not(target_env = "sgx")))'.dependencies]
+mapr = "0.8.0"
 
 # [build-dependencies]
 # protobuf-src = "1.0.5+3.19.3"

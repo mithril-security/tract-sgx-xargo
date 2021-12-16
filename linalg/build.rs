@@ -4,10 +4,21 @@ use liquid_core::{Value, ValueView};
 
 use std::{env, ffi, fs, path};
 
-fn var(k: &str) -> String {
-    env::var(k).unwrap()
+fn var(k: &str) -> String 
+{
+    let ret = env::var(k);
+    match ret 
+    {
+        Ok(str) => 
+        {
+            return str
+        },
+        Err(_x) => 
+        {
+            return String::from("Unknown")
+        },
+    }
 }
-
 fn use_masm() -> bool {
     env::var("CARGO_CFG_TARGET_ENV") == Ok("msvc".to_string()) && var("HOST").contains("-windows-")
 }
