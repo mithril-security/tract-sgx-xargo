@@ -135,7 +135,12 @@ impl Nnef {
     }
 }
 
+<<<<<<< HEAD
 impl tract_core::prelude::Framework<ProtoModel, TypedModel> for Nnef {
+=======
+impl tract_core::prelude::Framework<ProtoModel, TypedModel> for Nnef 
+{
+>>>>>>> 0664d855 (disabled fs)
     #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
     fn model_for_path(&self, p: impl AsRef<Path>) -> TractResult<TypedModel> {
         let proto = self.proto_model_for_path(p)?;

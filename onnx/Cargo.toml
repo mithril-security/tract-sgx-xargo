@@ -15,6 +15,9 @@ exclude = [ "test_cases" ]
 [features]
 untrusted_fs = ["tract-nnef/untrusted_fs"]
 
+[features]
+untrusted_fs = ["tract-nnef/untrusted_fs"]
+
 [badges]
 maintenance = { status = "actively-developed" }
 

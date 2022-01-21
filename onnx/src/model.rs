@@ -1,10 +1,15 @@
 use std::convert::TryInto;
 <<<<<<< HEAD
+<<<<<<< HEAD
 use std::path::PathBuf;
 =======
 
 #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
 >>>>>>> 368682e4 (disabled fs)
+=======
+
+#[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
+>>>>>>> 0664d855 (disabled fs)
 use std::{fs, path};
 
 use std::collections::HashMap;
@@ -269,6 +274,7 @@ impl Onnx {
 }
 
 impl Framework<pb::ModelProto, InferenceModel> for Onnx {
+
     fn model_for_path(&self, p: impl AsRef<path::Path>) -> TractResult<InferenceModel> {
         let mut path = PathBuf::new();
         path.push(&p);
