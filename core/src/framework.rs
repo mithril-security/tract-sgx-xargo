@@ -2,6 +2,7 @@
 use crate::internal::*;
 use std::fmt::Debug;
 use std::io::Read;
+#[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
 use std::path::Path;
 
 /// A Framework that translate its model to tract core model.
@@ -18,6 +19,7 @@ where
     /// Translate a proto model into a model.
     fn model_for_proto_model(&self, proto: &ProtoModel) -> TractResult<Model>;
 
+    #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
     /// Read a proto model from a filename.
     fn proto_model_for_path(&self, p: impl AsRef<Path>) -> TractResult<ProtoModel> {
         let mut r = std::fs::File::open(p.as_ref())
@@ -31,6 +33,7 @@ where
         self.model_for_proto_model(&proto_model)
     }
 
+    #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
     /// Build a model from a filename.
     fn model_for_path(&self, p: impl AsRef<Path>) -> TractResult<Model> {
         let mut r = std::fs::File::open(p.as_ref())
