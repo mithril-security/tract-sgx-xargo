@@ -11,6 +11,9 @@ autobenches = false
 edition = "2018"
 exclude = [ "test_cases" ]
 
+[features]
+untrusted_fs = ["tract-nnef/untrusted_fs"]
+
 [badges]
 maintenance = { status = "actively-developed" }
 
