@@ -1,11 +1,13 @@
 use tract_core::tract_data::itertools::Itertools;
 
+#[cfg(not(target_env = "sgx"))]
 use crate::ast::quant::write_quant_format;
 use crate::ast::{ProtoModel, QuantFormat};
 use crate::internal::*;
 use std::io::Read;
 #[cfg(target_family = "unix")]
 use std::os::unix::prelude::OsStrExt;
+#[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
 use std::path::Path;
 
 pub fn stdlib() -> Vec<FragmentDef> {
@@ -39,11 +41,13 @@ impl Nnef {
         ModelBuilder::new(self, proto_model).into_typed_model()
     }
 
+    #[cfg(not(target_env = "sgx"))]
     pub fn write(&self, model: &TypedModel, w: impl std::io::Write) -> TractResult<()> {
         self.write_to_tar(model, w)?;
         Ok(())
     }
 
+    #[cfg(not(target_env = "sgx"))]
     pub fn write_to_tar<W: std::io::Write>(&self, model: &TypedModel, w: W) -> TractResult<W> {
         let proto_model =
             crate::ser::to_proto_model(&self, model).context("Translating model to proto_model")?;
@@ -96,6 +100,7 @@ impl Nnef {
         Ok(ar.into_inner()?)
     }
 
+    #[cfg(not(target_env = "sgx"))]
     pub fn write_to_dir(
         &self,
         model: &TypedModel,
@@ -128,12 +133,15 @@ impl Nnef {
     }
 }
 
-impl tract_core::prelude::Framework<ProtoModel, TypedModel> for Nnef {
+impl tract_core::prelude::Framework<ProtoModel, TypedModel> for Nnef 
+{
+    #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
     fn model_for_path(&self, p: impl AsRef<Path>) -> TractResult<TypedModel> {
         let proto = self.proto_model_for_path(p)?;
         self.model_for_proto_model(&proto)
     }
 
+    #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
     fn proto_model_for_path(&self, path: impl AsRef<Path>) -> TractResult<ProtoModel> {
         let path = path.as_ref();
         if path.is_file() {

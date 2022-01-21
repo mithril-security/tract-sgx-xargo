@@ -33,6 +33,7 @@ tract-linalg = { version = "0.17.2-pre", path = "../linalg" }
 [features]
 default = [ ]
 paranoid_assertions = []
+untrusted_fs = []
 
 [dev-dependencies]
 criterion = "0.3.5"

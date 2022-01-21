@@ -78,6 +78,7 @@ where
     }
 }
 
+#[cfg(not(target_env = "sgx"))]
 pub(crate) fn write_quant_format(
     w: &mut impl std::io::Write,
     name: String,

@@ -1,9 +1,9 @@
 use std::convert::TryInto;
-use std::path::PathBuf;
-use std::{fs, path};
+
+#[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
+use std::{fs, path::{self, PathBuf}};
 
 use std::collections::HashMap;
-
 use tract_hir::internal::*;
 
 use crate::pb;
@@ -256,6 +256,7 @@ impl Onnx {
 
 impl Framework<pb::ModelProto, InferenceModel> for Onnx {
 
+    #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
     fn model_for_path(&self, p: impl AsRef<path::Path>) -> TractResult<InferenceModel> {
         let mut path = PathBuf::new();
         path.push(&p);
@@ -271,6 +272,7 @@ impl Framework<pb::ModelProto, InferenceModel> for Onnx {
         Ok(model)
     }
 
+    #[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
     fn proto_model_for_path(&self, p: impl AsRef<path::Path>) -> TractResult<pb::ModelProto> {
         #[cfg(all(not(target_arch = "wasm32"), not(target_env = "sgx")))]
         let map = unsafe { mapr::Mmap::map(&fs::File::open(p)?)? };
