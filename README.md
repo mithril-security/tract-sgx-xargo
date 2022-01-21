@@ -28,8 +28,7 @@ Those modules are NOT ported yet:
 * `tract-kaidi`
 
 In an `SGX` environment, all functions related to the `filesystem` are DISABLED.
-
-You can however enable back the reading from disk option by passing the feature `untrusted_fs`
+You can however enable back the reading from disk functions by passing the feature `untrusted_fs` to Tract.
 
 ## What ?
 
