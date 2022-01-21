@@ -27,6 +27,10 @@ Those modules are NOT ported yet:
 * `tract-pulse-opl`
 * `tract-kaidi`
 
+In an `SGX` environment, all functions related to the `filesystem` are DISABLED.
+
+You can however enable back the reading from disk option by passing the feature `untrusted_fs`
+
 ## What ?
 
 `tract` is a Neural Network inference toolkit. It can read Tensorflow 1, ONNX

@@ -35,6 +35,7 @@ pub use tract_onnx_opl::WithOnnx;
 
 use tract_hir::prelude::*;
 
+#[cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))]
 #[deprecated(note = "Please use onnx().model_for_path(..)")]
 pub fn for_path(p: impl AsRef<std::path::Path>) -> TractResult<InferenceModel> {
     onnx().model_for_path(p)

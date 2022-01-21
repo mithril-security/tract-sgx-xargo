@@ -12,6 +12,9 @@ edition = "2018"
 exclude = [ "test_cases" ]
 # build = "build-proto-rs"
 
+[features]
+untrusted_fs = ["tract-nnef/untrusted_fs"]
+
 [badges]
 maintenance = { status = "actively-developed" }
 
