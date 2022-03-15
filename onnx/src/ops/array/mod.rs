@@ -6,7 +6,6 @@ mod slice;
 mod split;
 mod squeeze;
 mod unsqueeze;
-mod range;
 
 use tract_hir::internal::*;
 use tract_hir::ops::array;
@@ -41,7 +40,6 @@ pub fn register_all_ops(reg: &mut OnnxOpRegister) {
     reg.insert("Squeeze", squeeze::squeeze);
     reg.insert("Tile", |_, _| Ok((expand(array::Tile::default()), vec![])));
     reg.insert("Transpose", transpose);
-    reg.insert("Range", range::range);
     reg.insert("Unsqueeze", unsqueeze::unsqueeze);
 }
 
