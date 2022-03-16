@@ -17,6 +17,7 @@ pub fn resize(
     let interpolator = match node.get_attr_opt("mode")?.unwrap_or("nearest") {
         "nearest" => Interpolator::Nearest,
         "linear" => Interpolator::Linear,
+        "nearest" => Interpolator::Nearest,
         s => todo!("mode: {}", s),
     };
     let nearest = match node.get_attr_opt("nearest_mode")?.unwrap_or("round_prefer_floor") {
