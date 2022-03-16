@@ -232,8 +232,8 @@ impl InferenceRulesOp for Resize {
                         }
                     },
                 )?
-            },
-            _ => {},
+            }
+            _ => {}
         }
         Ok(())
     }
