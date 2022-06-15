@@ -12,16 +12,20 @@ pub fn resize(
             "align_corners" => CoordTransformer::AlignCorners,
             "half_pixel" => CoordTransformer::HalfPixel,
             "asymmetric" => CoordTransformer::Asymmetric,
-            s => todo!("coordinate_transformation_mode: {}", s),
+            "pytorch_half_pixel" => CoordTransformer::PytorchHalfPixel,
+            s => bail!("unsupported coordinate_transformation_mode attribute value: {}", s),
         };
-    let interpolator = match node.get_attr("mode")? {
+    let interpolator = match node.get_attr_opt("mode")?.unwrap_or("nearest") {
+        "nearest" => Interpolator::Nearest,
         "linear" => Interpolator::Linear,
-        s => todo!("mode: {}", s),
+        s => bail!("unsupported mode attribute value: {}", s),
     };
     let nearest = match node.get_attr_opt("nearest_mode")?.unwrap_or("round_prefer_floor") {
         "floor" => Nearest::Floor,
+        "ceil" => Nearest::Ceil,
         "round_prefer_floor" => Nearest::RoundPreferFloor,
-        s => todo!("nearest_mode: {}", s),
+        "round_prefer_ceil" => Nearest::RoundPreferCeil,
+        s => bail!("unsupported nearest_mode attribute value: {}", s),
     };
     let mut options = crate::model::optional_inputs(node).skip(2);
     Ok((
@@ -41,6 +45,7 @@ enum CoordTransformer {
     HalfPixel,
     AlignCorners,
     Asymmetric,
+    PytorchHalfPixel,
 }
 
 impl CoordTransformer {
@@ -51,6 +56,13 @@ impl CoordTransformer {
                 (x_out as f32 * (len_in as f32 - 1.0)) / (len_out as f32 - 1.0)
             }
             CoordTransformer::Asymmetric => (x_out as f32) / scale,
+            CoordTransformer::PytorchHalfPixel => {
+                if len_out > 1 {
+                    (x_out as f32 + 0.5) / scale - 0.5
+                } else {
+                    0.0
+                }
+            }
         }
     }
 }
@@ -58,20 +70,41 @@ impl CoordTransformer {
 #[derive(Clone, Debug, Hash)]
 enum Interpolator {
     Linear,
+    Nearest,
 }
 
 impl Interpolator {
-    fn interpolate(&self, y_left: f32, y_right: f32, x_ratio: f32) -> f32 {
+    fn interpolate(&self, y_left: f32, y_right: f32, x_ratio: f32, nearest_mode: Nearest) -> f32 {
         match self {
             Interpolator::Linear => y_left * (1.0 - x_ratio) + y_right * x_ratio,
+            Interpolator::Nearest => match nearest_mode {
+                Nearest::Floor => y_left,
+                Nearest::Ceil => y_right,
+                Nearest::RoundPreferFloor => {
+                    if x_ratio <= 0.5 {
+                        y_left
+                    } else {
+                        y_right
+                    }
+                }
+                Nearest::RoundPreferCeil => {
+                    if x_ratio < 0.5 {
+                        y_left
+                    } else {
+                        y_right
+                    }
+                }
+            },
         }
     }
 }
 
-#[derive(Clone, Debug, Hash)]
+#[derive(Clone, Copy, Debug, Hash)]
 enum Nearest {
     Floor,
+    Ceil,
     RoundPreferFloor,
+    RoundPreferCeil,
 }
 
 #[derive(Clone, new, Debug, Hash)]
@@ -139,11 +172,12 @@ impl EvalOp for Resize {
             scales.map(|t| &**t),
             sizes.map(|t| &**t),
         )?;
+
         let mut data = inputs.remove(0).into_tensor().into_array::<f32>()?;
         for axis in 0..data.ndim() {
             if output_shape[axis] == data.shape()[axis] {
                 continue;
-            } else if output_shape[axis] > data.shape()[axis] {
+            } else {
                 let scale = output_shape[axis] as f32 / data.shape()[axis] as f32;
                 let mut new_shape: TVec<usize> = data.shape().into();
                 new_shape[axis] = output_shape[axis];
@@ -163,7 +197,7 @@ impl EvalOp for Resize {
                     co_i[axis] = x_right;
                     let y_right = data[&co_i];
                     let x_frac = x_in - x_left as f32;
-                    self.interpolator.interpolate(y_left, y_right, x_frac)
+                    self.interpolator.interpolate(y_left, y_right, x_frac, self.nearest)
                 })
             }
         }
@@ -181,24 +215,27 @@ impl InferenceRulesOp for Resize {
         check_output_arity(&outputs, 1)?;
         s.equals(&inputs[0].datum_type, &outputs[0].datum_type)?;
         s.equals(&inputs[0].rank, &outputs[0].rank)?;
-        if inputs.len() == 3 && self.optional_scales_input == Some(2) {
-            rules_with_scales(self, s, inputs, outputs)
-        } else if inputs.len() == 3 && self.optional_sizes_input == Some(2) {
-            rules_with_sizes(self, s, inputs, outputs)
-        } else {
-            // bogus 4 inputs case
-            s.given_2(
-                &inputs[0].rank,
-                &inputs[self.optional_scales_input.unwrap()].shape,
-                move |s, input_rank, scale_shape| {
-                    if scale_shape.len() == 0 || scale_shape[0] != input_rank.to_dim() {
-                        rules_with_sizes(self, s, inputs, outputs)
-                    } else {
-                        rules_with_scales(self, s, inputs, outputs)
-                    }
-                },
-            )
+
+        match (self.optional_scales_input.is_some(), self.optional_sizes_input.is_some()) {
+            (true, false) => rules_with_scales(self, s, inputs, outputs)?,
+            (false, true) => rules_with_sizes(self, s, inputs, outputs)?,
+            (true, true) => {
+                // bogus 4 inputs case
+                s.given_2(
+                    &inputs[0].rank,
+                    &inputs[self.optional_scales_input.unwrap()].shape,
+                    move |s, input_rank, scale_shape| {
+                        if scale_shape.len() == 0 || scale_shape[0] != input_rank.to_dim() {
+                            rules_with_sizes(self, s, inputs, outputs)
+                        } else {
+                            rules_with_scales(self, s, inputs, outputs)
+                        }
+                    },
+                )?
+            },
+            _ => {},
         }
+        Ok(())
     }
 
     as_op!();
