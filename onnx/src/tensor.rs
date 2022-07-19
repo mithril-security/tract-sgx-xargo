@@ -67,9 +67,9 @@ fn get_external_resources(t: &TensorProto, path: &str) -> TractResult<Vec<u8>>
     {
         let p = PathBuf::from(format!("{}/{}", path, external_data.value));
         trace!("external file detected: {:?}", p);
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(any(target_arch = "wasm32", target_env = "sgx")))]
         let file = unsafe { mapr::Mmap::map(&fs::File::open(p)?)?};
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(any(target_arch = "wasm32", target_env = "sgx"))]
         let file = fs::read(p)?;
         tensor_data.extend_from_slice(&*file);
         trace!("external file loaded");
@@ -105,7 +105,7 @@ fn common_tryfrom(t: &TensorProto, path: Option<&str>) -> TractResult<Tensor> {
     let dt = DataType::from_i32(t.data_type).unwrap().try_into()?;
         let shape: Vec<usize> = t.dims.iter().map(|&i| i as usize).collect();
         // detect if the tensor is rather in an external file than inside the onnx file directly
-        let is_external = t.data_location.is_some() && t.data_location == Some(1);
+        let is_external = t.data_location == 1;
         if t.raw_data.len() > 0 {
             create_tensor(shape, dt, &t.raw_data)
         } 

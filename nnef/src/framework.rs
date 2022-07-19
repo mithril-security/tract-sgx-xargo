@@ -1,3 +1,4 @@
+#[cfg(not(target_env = "sgx"))]
 use tract_core::tract_data::itertools::Itertools;
 
 #[cfg(not(target_env = "sgx"))]
