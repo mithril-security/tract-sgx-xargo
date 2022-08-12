@@ -28,6 +28,7 @@ smallvec = "1.6.1"
 tract-hir = { version = "0.17.2-pre", path = "../hir" }
 tract-nnef = { version = "0.17.2-pre", path = "../nnef" }
 tract-onnx-opl = { version = "0.17.2-pre", path = "../onnx-opl" }
+rand = "0.8.4"
 
 [target.'cfg(all(not(target_arch = "wasm32"), not(target_env = "sgx")))'.dependencies]
 mapr = "0.8.0"
