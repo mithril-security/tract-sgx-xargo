@@ -14,7 +14,7 @@ where
         for shape in shapes {
             let len = shape.as_ref().len();
             let dim = if i < len { &shape.as_ref()[len - i - 1] } else { &one };
-            if dim != &D::one() && !dim.has_sym() {
+            if dim != &D::one() {
                 if wanted_size != D::one() && dim != &wanted_size {
                     return None;
                 }
