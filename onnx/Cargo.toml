@@ -13,9 +13,8 @@ exclude = [ "test_cases" ]
 # build = "build-proto-rs"
 
 [features]
-untrusted_fs = ["tract-nnef/untrusted_fs"]
-
-[features]
+default = []
+getrandom-js = ["tract-onnx-opl/getrandom-js"]
 untrusted_fs = ["tract-nnef/untrusted_fs"]
 
 [badges]
@@ -42,7 +41,3 @@ mapr = "0.8.0"
 # [build-dependencies]
 # protobuf-src = "1.0.5+3.19.3"
 # prost-build = "0.11.1"
-
-[features]
-default = []
-getrandom-js = ["tract-onnx-opl/getrandom-js"]

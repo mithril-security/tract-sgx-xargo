@@ -30,6 +30,6 @@ debug = false
 # strip = "debuginfo" does not work on android and ios
 incremental = false
 
-[patch.crates-io]
-tar = { git = "https://github.com/mithril-security/tar-rs-sgx.git", tag = "0.4.33x"}
-anyhow = { git = 'ssh://git@github.com/mithril-security/anyhow-xargo-sgx.git', tag = "1.0.45-sgx" }
+# [patch.crates-io]
+# tar = { git = "https://github.com/mithril-security/tar-rs-sgx.git", tag = "0.4.33x"}
+# anyhow = { git = 'ssh://git@github.com/mithril-security/anyhow-xargo-sgx.git', tag = "1.0.45-sgx" }

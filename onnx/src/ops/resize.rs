@@ -15,7 +15,6 @@ pub fn resize(
             s => todo!("coordinate_transformation_mode: {}", s),
         };
     let interpolator = match node.get_attr_opt("mode")?.unwrap_or("nearest") {
-        "nearest" => Interpolator::Nearest,
         "linear" => Interpolator::Linear,
         "nearest" => Interpolator::Nearest,
         s => todo!("mode: {}", s),
@@ -87,7 +86,6 @@ impl Interpolator {
                     }
                 }
             },
-            Interpolator::Nearest => if x_ratio < 0.5 { y_left } else { y_right },
         }
     }
 }

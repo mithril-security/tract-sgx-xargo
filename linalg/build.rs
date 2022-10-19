@@ -4,19 +4,11 @@ use liquid_core::{Value, ValueView};
 
 use std::{env, ffi, fs, path};
 
-fn var(k: &str) -> String 
-{
+fn var(k: &str) -> String {
     let ret = env::var(k);
-    match ret 
-    {
-        Ok(str) => 
-        {
-            return str
-        },
-        Err(_x) => 
-        {
-            return String::from("Unknown")
-        },
+    match ret {
+        Ok(str) => return str,
+        Err(_x) => return String::from("Unknown"),
     }
 }
 fn use_masm() -> bool {
@@ -385,6 +377,6 @@ impl Filter for F16Filter {
         let input: f32 = input.as_scalar().unwrap().to_float().unwrap() as f32;
         let value = half::f16::from_f32(input);
         let bits = value.to_bits();
-        Ok(format!(".short {bits}").to_value())
+        Ok(format!(".short {}", bits).to_value())
     }
 }
