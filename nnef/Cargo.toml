@@ -21,9 +21,13 @@ tar = "=0.4.38"
 flate2 = { version = "1.0.20", optional = true }
 tract-core = { path = "../core" }
 
-[target.'cfg(any(feature = "untrusted_fs", not(target_env = "sgx")))'.dependencies]
-walkdir = "2.3.2"
+
+[target.'cfg(not(target_env = "sgx"))'.dependencies]
+walkdir = { version = "2.3.2", optional = true }
+
+[target.'cfg(target_env = "sgx")'.dependencies]
+walkdir = { version = "2.3.2" }
 
 [features]
 default = ["flate2"]
-untrusted_fs = ["tract-core/untrusted_fs"]
+untrusted_fs = ["tract-core/untrusted_fs", "walkdir"]
